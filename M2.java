@@ -33,6 +33,14 @@ public class M2
                 Proposer M2_proposer = new Proposer(ID, ports, value);
                 M2_proposer.start();
             }
+            else if(args[0].equals("fail"))
+            {
+                Acceptor M2_acceptor = new Acceptor(ID, port, false);
+                M2_acceptor.start();
+
+                Proposer_Modified M2_proposer = new Proposer_Modified(ID, ports, value);
+                M2_proposer.start();
+            }
             else
             {
                 System.out.println("Usage: java M2 <true|false>");

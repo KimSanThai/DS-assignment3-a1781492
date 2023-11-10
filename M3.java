@@ -26,6 +26,10 @@ public class M3
                     Acceptor M3_acceptor = new Acceptor(ID, port, true);
                     M3_acceptor.start();
                 }
+                else
+                {
+                    System.out.println("M3 not connected");
+                }
                 
                 Proposer M3_proposer = new Proposer(ID, ports, value);
                 M3_proposer.start();
@@ -36,6 +40,14 @@ public class M3
                 M3_acceptor.start();
 
                 Proposer M3_proposer = new Proposer(ID, ports, value);
+                M3_proposer.start();
+            }
+            else if(args[0].equals("fail"))
+            {
+                Acceptor M3_acceptor = new Acceptor(ID, port, false);
+                M3_acceptor.start();
+
+                Proposer_Modified M3_proposer = new Proposer_Modified(ID, ports, value);
                 M3_proposer.start();
             }
             else
