@@ -59,6 +59,8 @@ Test5.sh can be run with "./Test5.sh"
 **Delays are turned off for M1-M3 Acceptors this can be modified in the java file manually by changing true false in their respective java files (M1 will have to be changed in the script file - line 1).
 (M2 and M3 delay for this testing has to be changed manually in their java files under line 38 and line 47 respectively)
 
+Do note that M4-M9 can be run individually on its own terminal manually before running either script Test1.sh or Test3.sh or Test5.sh to improve visibility.
+
 Output:
 As the delays are randomized, the outputs are randomized but a consensus should be reached. The voting process can be followed by looking at the output (which is why manual code testing is recommended).
 As for Test5.sh, as the propose message is already sent out, it may be up for M1 to receive the accepted promise value then declare it as the consensus value once the consensus number of accept message has been achieved.
