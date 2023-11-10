@@ -12,7 +12,6 @@ public class Proposer extends Thread
     private String value;
     private int currentProposalNumber = 0;
     private int[] Ports;
-    private ConcurrentHashMap<Integer, Promise> PromiseHashMap = new ConcurrentHashMap<Integer, Promise>();
 
     //parameterized constructor
     public Proposer(int ID, int[] ports, String val)
@@ -30,8 +29,8 @@ public class Proposer extends Thread
             {
                 propose(value);
 
-                //wait 15 seconds before sending next round of propose
-                Thread.sleep(15000);
+                //wait 20 seconds before sending next round of propose
+                Thread.sleep(20000);
             }
         }
         catch(InterruptedException e)
@@ -47,6 +46,10 @@ public class Proposer extends Thread
 
         this.currentProposalNumber++;
 
+        //Initialize and reset hashmaps to store number of messages received back per round
+        ConcurrentHashMap<Integer, Promise> PromiseHashMap = new ConcurrentHashMap<Integer, Promise>();
+        ConcurrentHashMap<Integer, Accept> AcceptHashMap = new ConcurrentHashMap<Integer, Accept>();
+
         //Setup threads so that messsage can be sent to all simultaneously
         Thread[] prepareThreads = new Thread[Ports.length];
 
@@ -56,13 +59,22 @@ public class Proposer extends Thread
 
             prepareThreads[i] = new Thread(() -> 
             {
-            Promise r = sendPrepare(p, currentProposalNumber);
+            Object o = sendPrepare(p, currentProposalNumber);
 
             //if connection fails or response is not proper type
-            if(r != null)
+            if(o != null)
             {
                 //Add promise response to hashmap with sender's ID as key
-                PromiseHashMap.put(r.promiseID, r);
+                if(o instanceof Promise)
+                {
+                    Promise r = (Promise) o;
+                    PromiseHashMap.put(r.promiseID, r);
+                }
+                else if(o instanceof Accept)
+                {
+                    Accept r = (Accept) o;
+                    AcceptHashMap.put(r.acceptID, r);
+                }
             }
             });
             prepareThreads[i].start();
@@ -81,12 +93,12 @@ public class Proposer extends Thread
             }
         }
 
-        //check if majority of has sent back response
+        //check if majority of has sent back promise
         if(PromiseHashMap.size() > 4)
         {
             int tmp = 0;
 
-            //Check if there is censensus value and selects the largest one
+            //Check if there is censensus accept value and selects the largest one
             for(Map.Entry<Integer, Promise> v : PromiseHashMap.entrySet())
             {
                 if(v.getValue().value != "" & v.getValue().AcceptedProposalNum > tmp)
@@ -103,6 +115,47 @@ public class Proposer extends Thread
             {
                 sendPropose(p, currentProposalNumber, value);
             }
+        }
+
+        //check if majority of has sent back Accept
+        if(AcceptHashMap.size() > 4)
+        {
+            int tmp = 0;
+
+            //Check if the accept sent back is consensus
+            for(Map.Entry<Integer, Accept> v : AcceptHashMap.entrySet())
+            {
+                if(v.getValue().val == value)
+                {
+                    tmp++;
+                }
+            }
+            if(tmp > 4)
+            {
+                //Sends propose with new consensus value
+                for(int p : Ports)
+                {
+                    sendConsensus(p, currentProposalNumber, value);
+                }
+            }
+        }
+    }
+
+    private void sendConsensus(int port, int accepted_prop, String accepted_val)
+    {
+        try(Socket s = new Socket("localhost", port))
+        {
+            //setting socket timeout
+            s.setSoTimeout(10000);
+
+            //Send request
+            ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+            out.writeUnshared(new Consensus(accepted_prop, accepted_val));
+            out.flush();
+        }
+        catch(IOException e)
+        {
+            System.out.println("Message unable to be sent to port: " + port);
         }
     }
 
@@ -124,7 +177,7 @@ public class Proposer extends Thread
         }
     }
 
-    private Promise sendPrepare(int port, int ProposalNumber)
+    private Object sendPrepare(int port, int ProposalNumber)
     {
         try(Socket s = new Socket("localhost", port))
         {
@@ -139,7 +192,7 @@ public class Proposer extends Thread
             //Recieve response
             try (ObjectInputStream in = new ObjectInputStream(s.getInputStream()))
             {
-                Promise response = (Promise) in.readObject();
+                Object response = (Promise) in.readObject();
                 return response;
             }
             catch(java.net.SocketTimeoutException e)

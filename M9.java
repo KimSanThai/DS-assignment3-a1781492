@@ -8,19 +8,19 @@ public class M9
     {
         if(args.length == 0)
         {
-            Acceptor M9_acceptor = new Acceptor(ID, port, ports, false);
+            Acceptor M9_acceptor = new Acceptor(ID, port, false);
             M9_acceptor.start();
         }
         else if (args.length == 1)
         {
             if(args[0].equals("true"))
             {
-                Acceptor M9_acceptor = new Acceptor(ID, port, ports, true);
+                Acceptor M9_acceptor = new Acceptor(ID, port, true);
                 M9_acceptor.start();
             }
             else if(args[0].equals("false"))
             {
-                Acceptor M9_acceptor = new Acceptor(ID, port, ports, false);
+                Acceptor M9_acceptor = new Acceptor(ID, port, false);
                 M9_acceptor.start();
             }
             else

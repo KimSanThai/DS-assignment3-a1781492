@@ -8,19 +8,19 @@ public class M8
     {
         if(args.length == 0)
         {
-            Acceptor M8_acceptor = new Acceptor(ID, port, ports, false);
+            Acceptor M8_acceptor = new Acceptor(ID, port, false);
             M8_acceptor.start();
         }
         else if (args.length == 1)
         {
             if(args[0].equals("true"))
             {
-                Acceptor M8_acceptor = new Acceptor(ID, port, ports, true);
+                Acceptor M8_acceptor = new Acceptor(ID, port, true);
                 M8_acceptor.start();
             }
             else if(args[0].equals("false"))
             {
-                Acceptor M8_acceptor = new Acceptor(ID, port, ports, false);
+                Acceptor M8_acceptor = new Acceptor(ID, port, false);
                 M8_acceptor.start();
             }
             else

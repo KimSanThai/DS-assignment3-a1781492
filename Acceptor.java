@@ -13,14 +13,12 @@ public class Acceptor extends Thread
     private int HighestProposalNumber = 0;
     private int accepted_propNum;
     private String accepted_val;
-    private int[] Ports;
     private boolean delay_on = false;
 
-    public Acceptor(int ID, int port, int[] ports, boolean delay)
+    public Acceptor(int ID, int port, boolean delay)
     {
         this.ID = ID;
         this.port = port;
-        this.Ports = ports;
         this.delay_on = delay;
     }
 
@@ -96,7 +94,7 @@ public class Acceptor extends Thread
                         //sends accept message to everyone else
                         System.out.println("Sending accept messages out");
                         Accept a = new Accept(ID, accepted_propNum, accepted_val);
-                        Accept(a);
+                        sendAccept(a, s);
 
                         //Print message and close thread
                         System.out.println("Concensus value is: " + accepted_val);
@@ -106,15 +104,6 @@ public class Acceptor extends Thread
                         System.out.println("Proposal number is" + r.proposalNumber + " which is not equal to " + HighestProposalNumber);
                         System.out.println("Propose ignored");
                     }
-                }
-                else if (o instanceof Accept)
-                {
-                    Accept r = (Accept) o;
-                    
-                    accepted_val = r.val;
-                    accepted_propNum = r.proposalNumber;
-
-                    System.out.println("Consensus value is: " + accepted_val);
                 }
             }
         }
@@ -171,27 +160,17 @@ public class Acceptor extends Thread
         }
     }
 
-    //call sendAccept to send message to all ports
-    public void Accept(Accept a)
-    {
-        for(int p : Ports)
-            {
-                sendAccept(a, p);
-            }
-    }
-
     //sends Accept message to the port specified
-    public void sendAccept(Accept a, int p)
+    public void sendAccept(Accept a, Socket s)
     {
-        try(Socket s = new Socket("localhost", p);
-            ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream()))
+        try(ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream()))
         {
             out.writeUnshared(a);
             out.flush();
         }
         catch (IOException e)
         {
-            System.out.println("Unable to send accept to port: " + p);
+            System.out.println("Unable to send accept back");
         }
     }
 

@@ -8,19 +8,19 @@ public class M6
     {
         if(args.length == 0)
         {
-            Acceptor M6_acceptor = new Acceptor(ID, port, ports, false);
+            Acceptor M6_acceptor = new Acceptor(ID, port, false);
             M6_acceptor.start();
         }
         else if (args.length == 1)
         {
             if(args[0].equals("true"))
             {
-                Acceptor M6_acceptor = new Acceptor(ID, port, ports, true);
+                Acceptor M6_acceptor = new Acceptor(ID, port, true);
                 M6_acceptor.start();
             }
             else if(args[0].equals("false"))
             {
-                Acceptor M6_acceptor = new Acceptor(ID, port, ports, false);
+                Acceptor M6_acceptor = new Acceptor(ID, port, false);
                 M6_acceptor.start();
             }
             else

@@ -9,7 +9,7 @@ public class M1
     {
         if(args.length == 0)
         {
-            Acceptor M1_acceptor = new Acceptor(ID, port, ports, false);
+            Acceptor M1_acceptor = new Acceptor(ID, port, false);
             M1_acceptor.start();
 
             Proposer M1_proposer = new Proposer(ID, ports, value);
@@ -19,7 +19,7 @@ public class M1
         {
             if(args[0].equals("true"))
             {
-                Acceptor M1_acceptor = new Acceptor(ID, port, ports, true);
+                Acceptor M1_acceptor = new Acceptor(ID, port, true);
                 M1_acceptor.start();
 
                 Proposer M1_proposer = new Proposer(ID, ports, value);
@@ -27,7 +27,7 @@ public class M1
             }
             else if(args[0].equals("false"))
             {
-                Acceptor M1_acceptor = new Acceptor(ID, port, ports, false);
+                Acceptor M1_acceptor = new Acceptor(ID, port, false);
                 M1_acceptor.start();
 
                 Proposer M1_proposer = new Proposer(ID, ports, value);
