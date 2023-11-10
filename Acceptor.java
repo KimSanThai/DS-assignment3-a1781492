@@ -25,9 +25,8 @@ public class Acceptor extends Thread
     public void run()
     {
         //Open socket to listen for messages
-        try
+        try(ServerSocket ss = new ServerSocket(port))
         {
-            ServerSocket ss = new ServerSocket(port);
             System.out.println("Waiting for response on port: " + port);
 
             while(true)
@@ -95,9 +94,6 @@ public class Acceptor extends Thread
                         System.out.println("Sending accept messages out");
                         Accept a = new Accept(ID, accepted_propNum, accepted_val);
                         sendAccept(a, s);
-
-                        //Print message and close thread
-                        System.out.println("Concensus value is: " + accepted_val);
                     }
                     else
                     {
@@ -105,7 +101,16 @@ public class Acceptor extends Thread
                         System.out.println("Propose ignored");
                     }
                 }
+                else if (o instanceof Consensus)
+                {
+                    Consensus r = (Consensus) o;
+                    System.out.println("Consensus value is: " + r.consensusVal);
+                    break;
+                }
             }
+
+            //ends everything
+            return;
         }
         catch(InterruptedException e)
         {

@@ -12,6 +12,7 @@ public class Proposer extends Thread
     private String value;
     private int currentProposalNumber = 0;
     private int[] Ports;
+    private boolean consensusReached = false;
 
     //parameterized constructor
     public Proposer(int ID, int[] ports, String val)
@@ -29,6 +30,12 @@ public class Proposer extends Thread
             {
                 propose(value);
 
+                //checks if consensus has been reached to end the program
+                if(consensusReached)
+                {
+                    return;
+                }
+
                 //wait 20 seconds before sending next round of propose
                 Thread.sleep(20000);
             }
@@ -44,7 +51,8 @@ public class Proposer extends Thread
     {
         value = valueToPropose;
 
-        this.currentProposalNumber++;
+        //Increment proposal number per round
+        currentProposalNumber++;
 
         //Initialize and reset hashmaps to store number of messages received back per round
         ConcurrentHashMap<Integer, Promise> PromiseHashMap = new ConcurrentHashMap<Integer, Promise>();
@@ -84,12 +92,12 @@ public class Proposer extends Thread
             }
         }
 
-        //check if majority of has sent back promise
+        //Check if majority of has sent back promise
         if(PromiseHashMap.size() > 4)
         {
             int tmp = 0;
 
-            //Check if there is censensus accept value and selects the largest one
+            //Check if there is accept value and selects the largest one - Checks if phase 1 has ended
             for(Map.Entry<Integer, Promise> v : PromiseHashMap.entrySet())
             {
                 if(v.getValue().value != "" & v.getValue().AcceptedProposalNum > tmp)
@@ -110,26 +118,39 @@ public class Proposer extends Thread
 
                 proposeThreads[i] = new Thread(() -> 
                 {
-                Accept r = sendPropose(p, currentProposalNumber, value);
+                Accept a = sendPropose(p, currentProposalNumber, value);
 
                 //if connection fails or response is not proper type
-                if(r != null)
+                if(a != null)
                 {
                     //Add accept response to hashmap with sender's ID as key
-                    AcceptHashMap.put(r.acceptID, r);
+                    AcceptHashMap.put(a.acceptID, a);
                 }
                 });
                 proposeThreads[i].start();
             }
 
-            //Check if majority has returned accept message so consensus can be sent
+            //Wait for threads to finish execution
+            for (Thread thread : proposeThreads)
+            {
+                try
+                {
+                    thread.join();
+                }
+                catch(InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            //Check if majority has returned accept message so consensus can be sent - Checks if phase 2 has ended
             if(AcceptHashMap.size() > 4)
             {
                 tmp = 0;
                 //Check if accept values sent back has the same value
                 for(Map.Entry<Integer, Accept> v : AcceptHashMap.entrySet())
                 {
-                    if(v.getValue().val == value)
+                    if(v.getValue().val.equals(value))
                     {
                         tmp++;
                     }
@@ -142,8 +163,12 @@ public class Proposer extends Thread
                     {
                         sendConsensus(p, currentProposalNumber, value);
                     }
+
+                    System.out.println("Consensus value is: " + value);
+                    consensusReached = true;
                 }
             }
+            
         }
     }
 
@@ -177,7 +202,7 @@ public class Proposer extends Thread
             out.writeUnshared(new Propose(ID ,ProposalNumber, val));
             out.flush();
 
-            //Recieve response
+            //Recieve responses
             try (ObjectInputStream in = new ObjectInputStream(s.getInputStream()))
             {
                 Accept response = (Accept) in.readObject();
@@ -185,7 +210,7 @@ public class Proposer extends Thread
             }
             catch(java.net.SocketTimeoutException e)
             {
-                System.out.println("Timeout while waiting for response from port: "+ port);
+                System.out.println("Timeout while waiting for response from port: " + port);
                 return null;
             }
         }
@@ -208,7 +233,7 @@ public class Proposer extends Thread
             out.writeUnshared(new Prepare(ID, ProposalNumber));
             out.flush();
             
-            //Recieve response
+            //Recieve responses
             try (ObjectInputStream in = new ObjectInputStream(s.getInputStream()))
             {
                 Promise response = (Promise) in.readObject();
