@@ -147,6 +147,7 @@ public class Proposer extends Thread
             if(AcceptHashMap.size() > 4)
             {
                 tmp = 0;
+                
                 //Check if accept values sent back has the same value
                 for(Map.Entry<Integer, Accept> v : AcceptHashMap.entrySet())
                 {

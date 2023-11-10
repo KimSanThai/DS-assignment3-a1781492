@@ -38,6 +38,19 @@ public class Acceptor extends Thread
                 //Add delay
                 delay();
                 
+                //Checks if ID = 2 - sometimes doesnt respond at all (50% chance to completely ignore messages)
+                if(delay_on)
+                {
+                    if(ID == 2)
+                    {
+                        int randNum = (int)(Math.random()*10);
+                        if(randNum >= 5)
+                        {
+                            continue;
+                        }
+                    }
+                }
+
                 //if got sent Prepare message
                 if(o instanceof Prepare)
                 {

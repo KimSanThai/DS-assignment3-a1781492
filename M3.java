@@ -19,9 +19,14 @@ public class M3
         {
             if(args[0].equals("true"))
             {
-                Acceptor M3_acceptor = new Acceptor(ID, port, true);
-                M3_acceptor.start();
-
+                //for M3 there's a 50% chance that an Acceptor won't even be create due to him being in the woods
+                int randNum = (int)(Math.random()*10);
+                if(randNum >= 8)
+                {
+                    Acceptor M3_acceptor = new Acceptor(ID, port, true);
+                    M3_acceptor.start();
+                }
+                
                 Proposer M3_proposer = new Proposer(ID, ports, value);
                 M3_proposer.start();
             }
