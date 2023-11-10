@@ -24,12 +24,12 @@ public class M5
             }
             else
             {
-                System.out.println("Usage: java M2 <true|false>");
+                System.out.println("Usage: java M5 <true|false>");
             }
         }
         else
         {
-            System.out.println("Usage: java M2 <true|false>");
+            System.out.println("Usage: java M5 <true|false>");
         }
     }
 }

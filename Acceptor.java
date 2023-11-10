@@ -159,7 +159,7 @@ public class Acceptor extends Thread
             //not as responsive as M1 but not as late as M2 (3-6 seconds)
             else if(ID == 3)
             {
-                randDelay = (int)(Math.random()*6000+3000);
+                randDelay = (int)(Math.random()*3000+3000);
                 Thread.sleep(randDelay);
                 return;
             }

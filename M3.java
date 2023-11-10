@@ -52,12 +52,12 @@ public class M3
             }
             else
             {
-                System.out.println("Usage: java M2 <true|false>");
+                System.out.println("Usage: java M3 <true|false>");
             }
         }
         else
         {
-            System.out.println("Usage: java M2 <true|false>");
+            System.out.println("Usage: java M3 <true|false>");
         }
     }
 }

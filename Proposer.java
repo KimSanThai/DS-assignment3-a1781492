@@ -67,14 +67,14 @@ public class Proposer extends Thread
 
             prepareThreads[i] = new Thread(() -> 
             {
-            Promise r = sendPrepare(p, currentProposalNumber);
+                Promise r = sendPrepare(p, currentProposalNumber);
 
-            //if connection fails or response is not proper type
-            if(r != null)
-            {
-                //Add promise response to hashmap with sender's ID as key
-                PromiseHashMap.put(r.promiseID, r);
-            }
+                //if connection fails or response is not proper type
+                if(r != null)
+                {
+                    //Add promise response to hashmap with sender's ID as key
+                    PromiseHashMap.put(r.promiseID, r);
+                }
             });
             prepareThreads[i].start();
         }
@@ -118,14 +118,14 @@ public class Proposer extends Thread
 
                 proposeThreads[i] = new Thread(() -> 
                 {
-                Accept a = sendPropose(p, currentProposalNumber, value);
+                    Accept a = sendPropose(p, currentProposalNumber, value);
 
-                //if connection fails or response is not proper type
-                if(a != null)
-                {
-                    //Add accept response to hashmap with sender's ID as key
-                    AcceptHashMap.put(a.acceptID, a);
-                }
+                    //if connection fails or response is not proper type
+                    if(a != null)
+                    {
+                        //Add accept response to hashmap with sender's ID as key
+                        AcceptHashMap.put(a.acceptID, a);
+                    }
                 });
                 proposeThreads[i].start();
             }
@@ -169,7 +169,6 @@ public class Proposer extends Thread
                     consensusReached = true;
                 }
             }
-            
         }
     }
 
@@ -242,7 +241,7 @@ public class Proposer extends Thread
             }
             catch(java.net.SocketTimeoutException e)
             {
-                System.out.println("Timeout while waiting for response from port: "+ port);
+                System.out.println("Timeout while waiting for response from port: " + port);
                 return null;
             }
         }

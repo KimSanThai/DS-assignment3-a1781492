@@ -25,12 +25,12 @@ public class M8
             }
             else
             {
-                System.out.println("Usage: java M2 <true|false>");
+                System.out.println("Usage: java M8 <true|false>");
             }
         }
         else
         {
-            System.out.println("Usage: java M2 <true|false>");
+            System.out.println("Usage: java M8 <true|false>");
         }
     }
 }
